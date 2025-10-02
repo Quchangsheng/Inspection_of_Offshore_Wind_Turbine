@@ -18,7 +18,7 @@ class Worker:
 
         self.env = make_env(args)
 
-        self.writer = SummaryWriter(f'./log/{args.scenario}/algorithm{args.algorithm}/{cur_time.day}_{cur_time.hour}_{cur_time.minute}/{worker_id}')
+        self.writer = SummaryWriter(f'./log/num_turbines_{args.num_turbines}/num_UAV_per_ship_{args.num_UAV_per_ship}/algorithm_{args.algorithm}/{cur_time.day}_{cur_time.hour}_{cur_time.minute}/{worker_id}')
         self.episode_count = 0
 
     def collect_a_trajectory(self, interactive_agent, params_manager, replay_buffer):
@@ -34,28 +34,11 @@ class Worker:
         # prepare for a new episode
         temp_trajectory_dict = self.init_empty_trajectory(interactive_agent)
         for step in range(self.env.max_cycles):
-            termination, truncation = False, False
+            termination = False
             # choose action
-            for agent in self.env.agent_iter():
-                agent_index = self.env._index_map[self.env.agent_selection]
-                observation, reward, termination, truncation, info = self.env.last()
-                action, info_dict = interactive_agent.choose_action_train(observation, agent_index, step)
+            state = self.env.get_state()
 
-                # fill trajectory
-                temp_trajectory_dict[agent_index]['obs'].append(observation)
-                temp_trajectory_dict[agent_index]['action'].append([action])
-                temp_trajectory_dict[agent_index]['action_prob'].append(info_dict['action_prob'])
-                temp_trajectory_dict[agent_index]['reward'].append([reward])
-                temp_trajectory_dict[agent_index]['h_n_next'].append(info_dict['h_n'])
-                temp_trajectory_dict[agent_index]['c_n_next'].append(info_dict['c_n'])
-                temp_trajectory_dict[agent_index]['actor_index'].append(info_dict['actor_index'])
-                temp_trajectory_dict[agent_index]['terminal'].append([termination or truncation])
-                temp_trajectory_dict[agent_index]['mask'].append([1])
-
-                if termination or truncation:
-                    action = None
-                self.env.step(action)
-            if termination or truncation:
+            if termination:
                 break
 
         # trajectory storage
@@ -64,10 +47,6 @@ class Worker:
 
         del temp_trajectory_dict
         gc.collect()
-
-
-
-
 
     def collect_trajectories_for_debug(self, activated_model_list, params_manager, replay_buffer):
         # interactive agent initialization
