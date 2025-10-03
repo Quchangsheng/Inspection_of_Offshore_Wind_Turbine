@@ -12,7 +12,7 @@ from distribution.learner import Learner
 from distribution.replay_buffer import ReplayBuffer
 from distribution.parameter_manager import ParameterManager
 from agent.interactive_agent import InteractAgent
-from envs.make_env import make_env
+from env.make_env import make_env
 
 
 parser = argparse.ArgumentParser("Random example in RLCard")
