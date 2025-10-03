@@ -66,8 +66,15 @@ class NodeWorld:
             uav_on_the_ship = [uav for uav in uav_belongs_to_ship if uav.state == 0]
 
         # get next state, reward, and info
+        dynamic_state = self.get_dynamic_state()
+        reward = self.get_reward()
+        info = self.get_info()
 
-        pass
+        # update time
+        self.current_time = next_event_time
+        self.step_count += 1
+
+        return dynamic_state, reward, info, next_event_agent
 
     def find_next_event(self):
         next_event_time_bias = 1e10
@@ -123,10 +130,12 @@ class NodeWorld:
         return np.concatenate((ship_state_array, uav_state_array), axis=0)
 
     def get_reward(self):
-        pass
+        return 0
+
+    def get_done(self):
 
     def get_info(self):
-        pass
+        return None
 
 
 

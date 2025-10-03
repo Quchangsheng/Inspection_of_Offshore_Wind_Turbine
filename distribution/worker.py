@@ -5,7 +5,7 @@ import sys, time, datetime
 from tensorboardX import SummaryWriter
 
 from agent.interactive_agent import InteractAgent
-from envs.make_env import make_env
+from env.make_env import make_env
 
 
 @ray.remote(num_cpus=1)
@@ -33,12 +33,12 @@ class Worker:
 
         # prepare for a new episode
         temp_trajectory_dict = self.init_empty_trajectory(interactive_agent)
-        for step in range(self.env.max_cycles):
-            termination = False
+        node_static_state = self.env.get_static_state()
+        dynamic_state = self.env.get_dynamic_state()
+        while True:
             # choose action
-            state = self.env.get_state()
 
-            if termination:
+            if done:
                 break
 
         # trajectory storage
