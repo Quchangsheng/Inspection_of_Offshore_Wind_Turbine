@@ -133,6 +133,13 @@ class NodeWorld:
         return 0
 
     def get_done(self):
+        if self.step_count >= self.args.max_episode_length:
+            return True
+        else:
+            for node in self.node_list:
+                if node.inspected is False:
+                    return False
+            return True
 
     def get_info(self):
         return None
